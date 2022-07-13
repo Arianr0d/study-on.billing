@@ -1,4 +1,4 @@
-OMPOSE=docker-compose
+COMPOSE=docker-compose
 PHP=$(COMPOSE) exec php
 CONSOLE=$(PHP) bin/console
 COMPOSER=$(PHP) composer
@@ -20,6 +20,12 @@ migrate:
 
 fixtload:
 	@${CONSOLE} doctrine:fixtures:load
+
+encore_dev:
+	@${COMPOSE} run node npm run dev
+
+encore_prod:
+	@${COMPOSE} run node npm run build
 
 # В файл local.mk можно добавлять дополнительные make-команды,
 # которые требуются лично вам, но не нужны на проекте в целом
