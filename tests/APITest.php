@@ -66,7 +66,7 @@ class APITest extends AbstractTest
             'password' => 'passwordNewUser'
         ], 'json');
         $client = self::getClient();
-        $client->request('GET','/api/v1/register', [], [],
+        $client->request('POST','/api/v1/register', [], [],
             ['CONTENT_TYPE' => 'application/json'], $user);
         $this->assertResponseCode(Response::HTTP_CREATED);
         $this->assertTrue($client->getResponse()->headers->contains(
@@ -94,7 +94,7 @@ class APITest extends AbstractTest
         ));
         $jsonResponse  = json_decode($client->getResponse()->getContent(), true);
         $this->assertNotEmpty($jsonResponse['error']);
-        $this->assertEquals('Пользователь ' . $user['username'] . ' уже существует', $jsonResponse ['error']);
+        $this->assertEquals('Пользователь user@study-on-billing.ruуже существует', $jsonResponse ['error']);
     }
 
     // проверка корректности пароля при регистрации пользователя
@@ -115,7 +115,7 @@ class APITest extends AbstractTest
         ));
         $jsonResponse = json_decode($client->getResponse()->getContent(), true);
         $this->assertNotEmpty($jsonResponse['errors']['password']);
-        $this->assertContains('Поле пароля не должно быть пустым',
+        $this->assertContains('Password is mandatory',
             $jsonResponse['errors']['password']);
 
 
@@ -134,7 +134,7 @@ class APITest extends AbstractTest
         ));
         $jsonResponse = json_decode($client->getResponse()->getContent(), true);
         $this->assertNotEmpty($jsonResponse['errors']['password']);
-        $this->assertContains('Пароль не должен быть меньше 6 символов',
+        $this->assertContains('Password must be longer than 6 characters',
             $jsonResponse['errors']['password']);
     }
 
@@ -156,7 +156,7 @@ class APITest extends AbstractTest
         ));
         $jsonResponse = json_decode($client->getResponse()->getContent(), true);
         $this->assertNotEmpty($jsonResponse['errors']['username']);
-        $this->assertContains('Email не должен быть пустым',
+        $this->assertContains('Name is mandatory',
             $jsonResponse['errors']['username']);
 
         // неверный формат записи почты
@@ -174,7 +174,7 @@ class APITest extends AbstractTest
         ));
         $jsonResponse = json_decode($client->getResponse()->getContent(), true);
         $this->assertNotEmpty($jsonResponse['errors']['username']);
-        $this->assertContains('Email указан некорректно',
+        $this->assertContains('Invalid email address',
             $jsonResponse['errors']['username']);
     }
 }
