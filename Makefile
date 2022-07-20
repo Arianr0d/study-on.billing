@@ -21,11 +21,11 @@ migrate:
 fixtload:
 	@${CONSOLE} doctrine:fixtures:load
 
-encore_dev:
-	@${COMPOSE} run node npm run dev
+phpunit:
+	@${PHP} bin/phpunit
 
-encore_prod:
-	@${COMPOSE} run node npm run build
+unit:
+	@${CONSOLE} make:functional-test
 
 # В файл local.mk можно добавлять дополнительные make-команды,
 # которые требуются лично вам, но не нужны на проекте в целом

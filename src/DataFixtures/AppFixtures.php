@@ -21,6 +21,7 @@ class AppFixtures extends Fixture
         // Супер-пользователь
         $userSuperAdmin = new User();
         $userSuperAdmin->setEmail('admin@study-on-billing.ru');
+        $userSuperAdmin->setBalance(3500);
         $userPasswordHash = $this->passwordHash->hashPassword(
             $userSuperAdmin,
             'passwordUserAdmin'
@@ -32,6 +33,7 @@ class AppFixtures extends Fixture
         // Обычный пользователь
         $userUsual = new User();
         $userUsual->setEmail('user@study-on-billing.ru');
+        $userUsual->setBalance(5000);
         $userPasswordHash = $this->passwordHash->hashPassword(
             $userUsual,
             'passwordUser'
