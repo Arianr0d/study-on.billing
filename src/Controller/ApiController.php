@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 use App\DTO\UserDTO;
+use App\Entity\RefreshToken;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use JMS\Serializer\SerializerBuilder;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -172,7 +174,8 @@ class ApiController extends AbstractController
                              ValidatorInterface $validator,
                              EntityManagerInterface $manager,
                              UserPasswordHasherInterface $passwordHasher,
-                             UserRepository $userRepository): Response
+                             UserRepository $userRepository,
+                             RefreshTokenManagerInterface $refreshTokenManager): Response
     {
         $serializer = SerializerBuilder::create()->build();
         $userDto = $serializer->deserialize($request->getContent(), UserDTO::class, 'json');
@@ -196,7 +199,17 @@ class ApiController extends AbstractController
         $manager->persist($user);
         $manager->flush();
         $token = $JWTTokenManager->create($user);
-        return $this->json(['token' => $token, 'roles' => $user->getRoles()], Response::HTTP_CREATED);
+
+        $refreshToken = $refreshTokenManager->create();
+        $refreshToken->setUsername($user->getEmail());
+        $refreshToken->setRefreshToken();
+        $refreshToken->setValid((new \DateTime())->modify('+1 month'));
+        $refreshTokenManager->save($refreshToken);
+        return $this->json([
+            'token' => $token,
+            'roles' => $user->getRoles(),
+            'refresh_token '=> $refreshToken->getRefreshToken()
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -271,5 +284,13 @@ class ApiController extends AbstractController
             ],
             Response::HTTP_OK
         );
+    }
+
+    /**
+     * @Route("/api/v1/token/refresh", name="refresh", methods={"POST"})
+     */
+    public function refresh(Request $request, RefreshToken $refreshService)
+    {
+        return $refreshService->refresh($request);
     }
 }

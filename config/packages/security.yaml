@@ -11,6 +11,11 @@ security:
                 class: App\Entity\User
                 property: email
     firewalls:
+        api_token_refresh:
+            pattern: ^/api/v1/token/refresh
+            stateless: true
+            refresh_jwt:
+                check_path: /api/v1/token/refresh # or, you may use the `api_refresh_token` route name
         login:
             pattern: ^/api/v1/auth
             stateless: true
